@@ -1,22 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:p="http://www.springframework.org/schema/p"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
-                           http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://www.springframework.org/schema/context 
-                           http://www.springframework.org/schema/context/spring-context.xsd
-                           http://www.springframework.org/schema/mvc
-                           http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans"  
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+    xmlns:context="http://www.springframework.org/schema/context" 
+    xmlns:mvc="http://www.springframework.org/schema/mvc" 
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:webflow="http://www.springframework.org/schema/webflow-config"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans  
+	http://www.springframework.org/schema/beans/spring-beans-4.3.xsd  
+	http://www.springframework.org/schema/context  
+	http://www.springframework.org/schema/context/spring-context-4.3.xsd
+	http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx.xsd
+	http://www.springframework.org/schema/webflow-config
+    http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.4.xsd">  
+
+    <tx:annotation-driven/>
+    
                            
-    <context:component-scan base-package="com.controller"></context:component-scan>  
+    <context:component-scan base-package="com.controller"> </context:component-scan>
+    <context:component-scan base-package="com.entity"></context:component-scan>
+    <context:component-scan base-package="com.dao"></context:component-scan>  
     
-      <mvc:annotation-driven></mvc:annotation-driven>
-    
-    
-    <bean id="multipartResolver"
+     
+      
+       <bean id="multipartResolver"
     class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 
     <!-- one of the properties available; the maximum file size in bytes -->
@@ -27,6 +36,65 @@
     <property name="suffix" value=".jsp" />
     
     </bean> 
+      
+      <bean name="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"></property>
+    <property name="url" value="jdbc:mysql://localhost:3306/durgadb"></property>
+    <property name="username" value="root"></property>
+    <property name="password" value="Rahul@1103"></property>
+      </bean>
+      
+      
+
+      <bean id="factory"  class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">  
+        <property name="dataSource" ref="dataSource"></property>  
+          
+        
+          
+        <property name="hibernateProperties">  
+            <props>
+               <prop key="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</prop> 
+               <prop key="hibernate.show_sql">true</prop> 
+               <prop key="hibernate.hbm2ddl.auto">update</prop>  
+           </props> 
+        </property>  
+        
+         <property name="packagesToScan">  
+        <list>  
+        <value>com.entity</value>
+        <value>com.controller</value>
+        <value>com.dao</value>  
+        </list>  
+        </property>  
+        
+        <property name="annotatedClasses">
+              <list>
+                 <value> com.entity.Fileinfo </value>
+                 <value>com.dao.Dao</value>
+                 <value>com.dao.Imagedao</value>
+                 <value>com.dao.ImagedaoImpl</value>
+                 <value>com.controller.Mycontroller</value>
+              </list>
+        
+        </property>
+        
+    </bean>  
+    
+    <bean class="org.springframework.orm.hibernate5.HibernateTemplate" name="hibernateTemplate">
+        <property name="sessionFactory" ref="factory"></property>
+    </bean>
+    
+   
+     
+     <bean class="org.springframework.orm.hibernate5.HibernateTransactionManager" name="transactionManager" >
+     
+      <property name="sessionFactory" ref="factory"></property>   
+      
+     </bean>
+    
+    
+    
+   
       
                            
                            
